@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: salarydb
+      POSTGRES_USER: salary
+      POSTGRES_PASSWORD: salary
+    ports: ["5432:5432"]
+    volumes: [salary-data:/var/lib/postgresql/data]
+volumes:
+  salary-data:
