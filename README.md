@@ -67,3 +67,29 @@ mvn test
 - `GET /api/fx-rates`
 
 The backend normalizes salary to the base currency (`USD` by default) using the effective FX rate for the employee's currency.
+
+## HR Login
+
+The UI now starts with an HR login screen.
+
+Demo credentials:
+- User ID: `HRadmin`
+- Password: `HRadmin`
+
+The frontend keeps the authenticated state in browser `sessionStorage` until Logout or the browser session ends. The backend exposes `POST /api/auth/login` for credential validation.
+
+> Note: This is assignment/demo authentication. The credentials are intentionally configured in the backend source and the employee APIs are not protected by Spring Security/JWT. For production, replace this with Spring Security, password hashing, sessions or JWT, and role-based authorization.
+
+## Employee Form Selections
+
+Department, country, and currency are dropdowns in the Add/Edit employee form.
+
+Available departments:
+Engineering, Developement, Finance, HR, Sales, Operations, Product
+
+Available countries:
+India, USA, UK, Germany, Singapore, Australia
+
+Available currencies:
+USD, EUR, GBP, INR, SGD, AUD
+
