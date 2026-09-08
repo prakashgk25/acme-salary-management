@@ -14,7 +14,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: ${PORT:8080}a
+  port: ${PORT:8080}
 
 app:
   base-currency: USD
