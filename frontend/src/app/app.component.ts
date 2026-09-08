@@ -248,7 +248,7 @@ interface LoginResponse {
   `
 })
 export class AppComponent {
-  private api = 'http://localhost:8080/api';
+  private api = 'https://acme-salary-management-vltn.onrender.com/api';
 
   loggedIn = false;
   loginUserId = '';

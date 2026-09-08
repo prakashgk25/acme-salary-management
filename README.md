@@ -34,7 +34,7 @@ cd backend
 mvn spring-boot:run
 ```
 
-Default profile uses H2 in-memory DB and seeds 10,000 employees + FX rates. API: `http://localhost:8080/api`.
+PostgreSQL (Neon) is used as the production database and seeds 10,000 employees + FX rates. API: `https://acme-salary-management-vltn.onrender.com/api`.
 
 For PostgreSQL, set `SPRING_PROFILES_ACTIVE=postgres` and the datasource environment variables in `application-postgres.yml`.
 
