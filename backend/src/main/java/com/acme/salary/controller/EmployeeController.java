@@ -3,7 +3,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.data.web.PageableDefault;
 import com.acme.salary.dto.*; import com.acme.salary.service.EmployeeService; import jakarta.validation.Valid; import org.springframework.data.domain.*; import org.springframework.web.bind.annotation.*;
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {
+        "http://localhost:4200",
+        "https://acme-salary-management-ui.onrender.com"
+})
 @RestController
 @RequestMapping("/api/employees")
 public class EmployeeController { private final EmployeeService s; public EmployeeController(EmployeeService s){this.s=s;}

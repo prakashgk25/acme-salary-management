@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {
+        "http://localhost:4200",
+        "https://acme-salary-management-ui.onrender.com"
+})
 public class AuthController {
 
     private static final String USER_ID = "HRadmin";
