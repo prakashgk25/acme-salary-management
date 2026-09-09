@@ -21,7 +21,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        if (USER_ID.equals(request.userId()) && PASSWORD.equals(request.password())) {
+        if (USER_ID.equals(request.username()) && PASSWORD.equals(request.password())) {
             return ResponseEntity.ok(new LoginResponse(true, "Login successful"));
         }
 
@@ -30,7 +30,7 @@ public class AuthController {
                 .body(new LoginResponse(false, "Invalid user ID or password"));
     }
 
-    public record LoginRequest(String userId, String password) {
+    public record LoginRequest(String username, String password) {
     }
 
     public record LoginResponse(boolean success, String message) {

@@ -10,6 +10,6 @@ import com.acme.salary.dto.*; import com.acme.salary.service.EmployeeService; im
 @RestController
 @RequestMapping("/api/employees")
 public class EmployeeController { private final EmployeeService s; public EmployeeController(EmployeeService s){this.s=s;}
- @GetMapping public Page<EmployeeResponse> search(@RequestParam(required=false) String search,@RequestParam(required=false) String country,@RequestParam(required=false) String department,@RequestParam(required=false) String currency,@PageableDefault(size=25,sort="lastName") Pageable pageable){return s.search(search,country,department,currency,pageable);}
+ @GetMapping public Page<EmployeeResponse> search(@RequestParam(required=false) String search,@RequestParam(required=false) String country,@RequestParam(required=false) String department,@RequestParam(required=false) String currency,@PageableDefault(size=25) Pageable pageable){return s.search(search,country,department,currency,pageable);}
  @GetMapping("/{id}") public EmployeeResponse get(@PathVariable Long id){return s.get(id);} @PostMapping public EmployeeResponse create(@Valid @RequestBody EmployeeRequest r){return s.create(r);} @PutMapping("/{id}") public EmployeeResponse update(@PathVariable Long id,@Valid @RequestBody EmployeeRequest r){return s.update(id,r);} @DeleteMapping("/{id}") public void delete(@PathVariable Long id,@RequestHeader("If-Match-Version") Long version){s.delete(id,version);}
 }

@@ -1,41 +1,65 @@
 {
-"$schema": "https://json.schemastore.org/angular.json",
-"version": 1,
-"projects": {
-"salary-ui": {
-"projectType": "application",
-"root": "",
-"sourceRoot": "src",
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"browser": "src/main.ts",
-"polyfills": [
-"zone.js"
-],
-"tsConfig": "tsconfig.app.json",
-"assets": [
-"src/assets"
-],
-"styles": [
-"src/styles.css"
-]
-},
-"configurations": {
-"development": {}
-}
-},
-"serve": {
-"builder": "@angular-devkit/build-angular:dev-server",
-"configurations": {
-"development": {
-"buildTarget": "salary-ui:build:development"
-}
-},
-"defaultConfiguration": "development"
-}
-}
-}
-}
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "salary-management-frontend": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "assets": [],
+            "styles": [
+              "src/styles.css"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": true,
+                "fonts": false
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "salary-management-frontend:build:production"
+            },
+            "development": {
+              "buildTarget": "salary-management-frontend:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
 }

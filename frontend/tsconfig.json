@@ -1,1 +1,1 @@
-{"compilerOptions":{"target":"ES2022","module":"ES2022","moduleResolution":"bundler","strict":true,"skipLibCheck":true,"experimentalDecorators":true,"useDefineForClassFields":false}}
+{"compileOnSave":false,"compilerOptions":{"strict":true,"noImplicitOverride":true,"noPropertyAccessFromIndexSignature":true,"noImplicitReturns":true,"noFallthroughCasesInSwitch":true,"skipLibCheck":true,"isolatedModules":true,"experimentalDecorators":true,"target":"ES2022","module":"preserve","moduleResolution":"bundler","importHelpers":true,"useDefineForClassFields":false}}

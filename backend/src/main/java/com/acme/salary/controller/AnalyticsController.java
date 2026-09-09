@@ -22,7 +22,7 @@ public class AnalyticsController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping({ "", "/summary" })
     public AnalyticsResponse summary() {
         return service.summary();
     }
