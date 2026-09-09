@@ -21,134 +21,118 @@ import java.util.Map;
 @Service
 public class AnalyticsService {
 
-    private static final long ANALYTICS_ID = 1L;
+        private static final long ANALYTICS_ID = 1L;
 
-    private final EmployeeRepository employeeRepository;
-    private final SalaryAnalyticsRepository analyticsRepository;
-    private final FxRateRepository fxRateRepository;
+        private final EmployeeRepository employeeRepository;
+        private final SalaryAnalyticsRepository analyticsRepository;
+        private final FxRateRepository fxRateRepository;
 
-    public AnalyticsService(
-            EmployeeRepository employeeRepository,
-            SalaryAnalyticsRepository analyticsRepository,
-            FxRateRepository fxRateRepository) {
+        public AnalyticsService(
+                        EmployeeRepository employeeRepository,
+                        SalaryAnalyticsRepository analyticsRepository,
+                        FxRateRepository fxRateRepository) {
 
-        this.employeeRepository = employeeRepository;
-        this.analyticsRepository = analyticsRepository;
-        this.fxRateRepository = fxRateRepository;
-    }
-
-    @Transactional
-    public void refresh() {
-
-        List<Employee> employees =
-                employeeRepository.findAllForAnalytics();
-
-        Map<String, BigDecimal> rates = new HashMap<>();
-
-        for (FxRate fxRate : fxRateRepository.findAll()) {
-            rates.put(fxRate.getCurrency(), fxRate.getToUsd());
+                this.employeeRepository = employeeRepository;
+                this.analyticsRepository = analyticsRepository;
+                this.fxRateRepository = fxRateRepository;
         }
 
-        long totalEmployees = employees.size();
+        @Transactional
+        public void refresh() {
 
-        BigDecimal totalPayroll = BigDecimal.ZERO;
-        BigDecimal minimumSalary = null;
-        BigDecimal maximumSalary = null;
+                List<Employee> employees = employeeRepository.findAllForAnalytics();
 
-        for (Employee employee : employees) {
+                Map<String, BigDecimal> rates = new HashMap<>();
 
-            BigDecimal rate = rates.get(employee.getCurrency());
+                for (FxRate fxRate : fxRateRepository.findAll()) {
+                        rates.put(fxRate.getCurrency(), fxRate.getToUsd());
+                }
 
-            if (rate == null) {
-                throw new IllegalStateException(
-                        "FX rate not found for currency: "
-                                + employee.getCurrency()
-                );
-            }
+                long totalEmployees = employees.size();
 
-            BigDecimal normalizedSalary =
-                    employee.getAnnualSalary()
-                            .multiply(rate)
-                            .setScale(2, RoundingMode.HALF_UP);
+                BigDecimal totalPayroll = BigDecimal.ZERO;
+                BigDecimal minimumSalary = null;
+                BigDecimal maximumSalary = null;
 
-            totalPayroll = totalPayroll.add(normalizedSalary);
+                for (Employee employee : employees) {
 
-            if (minimumSalary == null ||
-                    normalizedSalary.compareTo(minimumSalary) < 0) {
-                minimumSalary = normalizedSalary;
-            }
+                        BigDecimal rate = rates.get(employee.getCurrency());
 
-            if (maximumSalary == null ||
-                    normalizedSalary.compareTo(maximumSalary) > 0) {
-                maximumSalary = normalizedSalary;
-            }
+                        if (rate == null) {
+                                throw new IllegalStateException(
+                                                "FX rate not found for currency: "
+                                                                + employee.getCurrency());
+                        }
+
+                        BigDecimal normalizedSalary = employee.getAnnualSalary()
+                                        .multiply(rate)
+                                        .setScale(2, RoundingMode.HALF_UP);
+
+                        totalPayroll = totalPayroll.add(normalizedSalary);
+
+                        if (minimumSalary == null ||
+                                        normalizedSalary.compareTo(minimumSalary) < 0) {
+                                minimumSalary = normalizedSalary;
+                        }
+
+                        if (maximumSalary == null ||
+                                        normalizedSalary.compareTo(maximumSalary) > 0) {
+                                maximumSalary = normalizedSalary;
+                        }
+                }
+
+                if (minimumSalary == null) {
+                        minimumSalary = BigDecimal.ZERO;
+                }
+
+                if (maximumSalary == null) {
+                        maximumSalary = BigDecimal.ZERO;
+                }
+
+                BigDecimal averageSalary = totalEmployees == 0
+                                ? BigDecimal.ZERO
+                                : totalPayroll.divide(
+                                                BigDecimal.valueOf(totalEmployees),
+                                                2,
+                                                RoundingMode.HALF_UP);
+
+                SalaryAnalytics analytics = analyticsRepository.findById(ANALYTICS_ID)
+                                .orElseGet(() -> {
+                                        SalaryAnalytics a = new SalaryAnalytics();
+                                        a.setId(ANALYTICS_ID);
+                                        return a;
+                                });
+
+                analytics.setTotalEmployees(totalEmployees);
+                analytics.setTotalPayrollUsd(
+                                totalPayroll.setScale(2, RoundingMode.HALF_UP));
+                analytics.setAverageSalaryUsd(averageSalary);
+                analytics.setMinimumSalaryUsd(
+                                minimumSalary.setScale(2, RoundingMode.HALF_UP));
+                analytics.setMaximumSalaryUsd(
+                                maximumSalary.setScale(2, RoundingMode.HALF_UP));
+                analytics.setCalculatedAt(LocalDateTime.now());
+
+                analyticsRepository.saveAndFlush(analytics);
         }
 
-        if (minimumSalary == null) {
-            minimumSalary = BigDecimal.ZERO;
+        @Transactional
+        public AnalyticsResponse summary() {
+
+                SalaryAnalytics analytics = analyticsRepository.findById(ANALYTICS_ID)
+                                .orElse(null);
+
+                if (analytics == null) {
+                        refresh();
+
+                        analytics = analyticsRepository.findById(ANALYTICS_ID)
+                                        .orElseThrow(() -> new RuntimeException(
+                                                        "Analytics summary not available"));
+                }
+
+                return new AnalyticsResponse(
+                                analytics.getTotalEmployees(),
+                                analytics.getAverageSalaryUsd(),
+                                analytics.getTotalPayrollUsd());
         }
-
-        if (maximumSalary == null) {
-            maximumSalary = BigDecimal.ZERO;
-        }
-
-        BigDecimal averageSalary =
-                totalEmployees == 0
-                        ? BigDecimal.ZERO
-                        : totalPayroll.divide(
-                                BigDecimal.valueOf(totalEmployees),
-                                2,
-                                RoundingMode.HALF_UP
-                        );
-
-        SalaryAnalytics analytics =
-                analyticsRepository.findById(ANALYTICS_ID)
-                        .orElseGet(() -> {
-                            SalaryAnalytics a =
-                                    new SalaryAnalytics();
-                            a.setId(ANALYTICS_ID);
-                            return a;
-                        });
-
-        analytics.setTotalEmployees(totalEmployees);
-        analytics.setTotalPayrollUsd(
-                totalPayroll.setScale(2, RoundingMode.HALF_UP)
-        );
-        analytics.setAverageSalaryUsd(averageSalary);
-        analytics.setMinimumSalaryUsd(
-                minimumSalary.setScale(2, RoundingMode.HALF_UP)
-        );
-        analytics.setMaximumSalaryUsd(
-                maximumSalary.setScale(2, RoundingMode.HALF_UP)
-        );
-        analytics.setCalculatedAt(LocalDateTime.now());
-
-        analyticsRepository.saveAndFlush(analytics);
-    }
-
-    @Transactional
-    public AnalyticsResponse summary() {
-
-        SalaryAnalytics analytics =
-                analyticsRepository.findById(ANALYTICS_ID)
-                        .orElse(null);
-
-        if (analytics == null) {
-            refresh();
-
-            analytics =
-                    analyticsRepository.findById(ANALYTICS_ID)
-                            .orElseThrow(() ->
-                                    new RuntimeException(
-                                            "Analytics summary not available"
-                                    )
-                            );
-        }
-
-        return new AnalyticsResponse(
-                analytics.getTotalEmployees(),
-                analytics.getAverageSalaryUsd(),
-                analytics.getTotalPayrollUsd()
-        );
-    }
 }

@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ToastStackComponent } from './shared/components/toast/toast.component';
+import { Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { ToastStackComponent } from "./shared/components/toast/toast.component";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   standalone: true,
   imports: [RouterOutlet, ToastStackComponent],
   template: `
     <router-outlet />
     <app-toast-stack />
-  `
+  `,
 })
 export class AppComponent {}

@@ -1,34 +1,56 @@
 <div class="workspace">
-
   <header class="topbar">
     <div class="topbar-brand">
       <span class="brand-mark">ACME</span>
       <div>
         <h1>Salary Manager</h1>
-        <p>HR workspace </p>
+        <p>HR workspace</p>
       </div>
     </div>
     <div class="topbar-actions">
       <span class="topbar-user">{{ userId() }}</span>
-      <button type="button" class="btn btn-ghost-inverse" (click)="refresh()" [disabled]="refreshing()">
-        <svg class="btn-icon" [class.spin]="refreshing()" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v3.2h-3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <button
+        type="button"
+        class="btn btn-ghost-inverse"
+        (click)="refresh()"
+        [disabled]="refreshing()"
+      >
+        <svg
+          class="btn-icon"
+          [class.spin]="refreshing()"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2v3.2h-3.2"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
         Refresh
       </button>
-      <button type="button" class="btn btn-ghost-inverse" (click)="logout()">Sign out</button>
+      <button type="button" class="btn btn-ghost-inverse" (click)="logout()">
+        Sign out
+      </button>
     </div>
   </header>
 
   <main class="workspace-body">
-
     <section class="stats-row">
       <article class="stat-card stat-hero">
         <span>Total payroll (USD)</span>
         @if (analyticsLoading()) {
           <strong class="stat-skeleton"></strong>
         } @else {
-          <strong>{{ (analytics()?.totalUsdPayroll ?? 0) | currency:'USD':'symbol':'1.0-0' }}</strong>
+          <strong>{{
+            analytics()?.totalUsdPayroll ?? 0
+              | currency: "USD" : "symbol" : "1.0-0"
+          }}</strong>
         }
       </article>
       <article class="stat-card">
@@ -36,7 +58,7 @@
         @if (analyticsLoading()) {
           <strong class="stat-skeleton"></strong>
         } @else {
-          <strong>{{ (analytics()?.employeeCount ?? 0) | number }}</strong>
+          <strong>{{ analytics()?.employeeCount ?? 0 | number }}</strong>
         }
       </article>
       <article class="stat-card">
@@ -44,7 +66,10 @@
         @if (analyticsLoading()) {
           <strong class="stat-skeleton"></strong>
         } @else {
-          <strong>{{ (analytics()?.averageUsdSalary ?? 0) | currency:'USD':'symbol':'1.0-0' }}</strong>
+          <strong>{{
+            analytics()?.averageUsdSalary ?? 0
+              | currency: "USD" : "symbol" : "1.0-0"
+          }}</strong>
         }
       </article>
     </section>
@@ -57,9 +82,13 @@
           placeholder="Search by name or employee ID"
           [ngModel]="searchTerm()"
           (ngModelChange)="searchTerm.set($event)"
-          (keyup.enter)="search()" />
+          (keyup.enter)="search()"
+        />
 
-        <select [ngModel]="department()" (ngModelChange)="department.set($event)">
+        <select
+          [ngModel]="department()"
+          (ngModelChange)="department.set($event)"
+        >
           <option value="">All departments</option>
           @for (dept of departments; track dept) {
             <option [value]="dept">{{ dept }}</option>
@@ -80,8 +109,17 @@
           }
         </select>
 
-        <button type="button" class="btn btn-primary" (click)="search()">Search</button>
-        <button type="button" class="btn btn-ghost" (click)="resetFilters()" [disabled]="!hasFilters()">Reset filters</button>
+        <button type="button" class="btn btn-primary" (click)="search()">
+          Search
+        </button>
+        <button
+          type="button"
+          class="btn btn-ghost"
+          (click)="resetFilters()"
+          [disabled]="!hasFilters()"
+        >
+          Reset filters
+        </button>
       </div>
     </section>
 
@@ -89,9 +127,14 @@
       <div class="panel-head">
         <div>
           <h2>Salary records</h2>
-          <p>{{ pageData().totalElements | number }} total · showing {{ pageData().numberOfElements }} on this page</p>
+          <p>
+            {{ pageData().totalElements | number }} total · showing
+            {{ pageData().numberOfElements }} on this page
+          </p>
         </div>
-        <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add employee</button>
+        <button type="button" class="btn btn-primary" (click)="openAddModal()">
+          + Add employee
+        </button>
       </div>
 
       @if (loadError()) {
@@ -103,7 +146,12 @@
       } @else if (employees().length === 0) {
         <app-empty-state
           [title]="hasFilters() ? 'No matching records' : 'No employees yet'"
-          [message]="hasFilters() ? 'Try a different search term or reset the filters.' : 'Add your first employee to get started.'" />
+          [message]="
+            hasFilters()
+              ? 'Try a different search term or reset the filters.'
+              : 'Add your first employee to get started.'
+          "
+        />
       } @else {
         <div class="table-scroll">
           <table>
@@ -123,20 +171,40 @@
                 <tr>
                   <td>
                     <div class="employee-cell">
-                      <span class="avatar-chip" [class]="avatarClass(employee)">{{ initials(employee) }}</span>
+                      <span
+                        class="avatar-chip"
+                        [class]="avatarClass(employee)"
+                        >{{ initials(employee) }}</span
+                      >
                       <div>
-                        <strong>{{ employee.firstName }} {{ employee.lastName }}</strong>
+                        <strong
+                          >{{ employee.firstName }}
+                          {{ employee.lastName }}</strong
+                        >
                         <div class="sub">{{ employee.employeeNumber }}</div>
                       </div>
                     </div>
                   </td>
-                  <td><span class="dept-chip">{{ employee.department }}</span></td>
+                  <td>
+                    <span class="dept-chip">{{ employee.department }}</span>
+                  </td>
                   <td>{{ employee.country }}</td>
-                  <td class="num">{{ employee.annualSalary | number:'1.2-2' }} {{ employee.currency }}</td>
-                  <td class="num">{{ employee.normalizedUsdSalary | number:'1.2-2' }} USD</td>
+                  <td class="num">
+                    {{ employee.annualSalary | number: "1.2-2" }}
+                    {{ employee.currency }}
+                  </td>
+                  <td class="num">
+                    {{ employee.normalizedUsdSalary | number: "1.2-2" }} USD
+                  </td>
                   <td>{{ employee.effectiveDate }}</td>
                   <td class="col-actions">
-                    <button type="button" class="link-btn" (click)="openEditModal(employee)">Edit</button>
+                    <button
+                      type="button"
+                      class="link-btn"
+                      (click)="openEditModal(employee)"
+                    >
+                      Edit
+                    </button>
                   </td>
                 </tr>
               }
@@ -145,23 +213,44 @@
         </div>
 
         <div class="pagination">
-          <select class="page-size" [ngModel]="pageSize()" (ngModelChange)="changePageSize($event)">
+          <select
+            class="page-size"
+            [ngModel]="pageSize()"
+            (ngModelChange)="changePageSize($event)"
+          >
             <option [ngValue]="10">10 / page</option>
             <option [ngValue]="25">25 / page</option>
             <option [ngValue]="50">50 / page</option>
           </select>
 
           <div class="page-buttons">
-            <button type="button" (click)="goToPage(pageData().number - 1)" [disabled]="pageData().first">‹</button>
+            <button
+              type="button"
+              (click)="goToPage(pageData().number - 1)"
+              [disabled]="pageData().first"
+            >
+              ‹
+            </button>
             @for (p of pageNumbers(); track p) {
-              <button type="button" [class.active]="p === pageData().number" (click)="goToPage(p)">{{ p + 1 }}</button>
+              <button
+                type="button"
+                [class.active]="p === pageData().number"
+                (click)="goToPage(p)"
+              >
+                {{ p + 1 }}
+              </button>
             }
-            <button type="button" (click)="goToPage(pageData().number + 1)" [disabled]="pageData().last">›</button>
+            <button
+              type="button"
+              (click)="goToPage(pageData().number + 1)"
+              [disabled]="pageData().last"
+            >
+              ›
+            </button>
           </div>
         </div>
       }
     </section>
-
   </main>
 </div>
 
@@ -171,6 +260,7 @@
     [employee]="modalEmployee()"
     (saved)="onSaved($event)"
     (deleted)="onDeleted($event)"
-    (closed)="closeModal()">
+    (closed)="closeModal()"
+  >
   </app-employee-modal>
 }

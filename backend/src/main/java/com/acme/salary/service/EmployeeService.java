@@ -1,9 +1,11 @@
 package com.acme.salary.service;
-
+import com.acme.salary.repository.EmployeeSpecifications;
 import com.acme.salary.dto.*;
 import com.acme.salary.entity.Employee;
 import com.acme.salary.exception.*;
 import com.acme.salary.repository.EmployeeRepository;
+import com.acme.salary.repository.EmployeeSpecifications;
+
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,10 +42,8 @@ public class EmployeeService {
                 fx.normalize(
                         e.getCurrency(),
                         e.getAnnualSalary(),
-                        e.getEffectiveDate()
-                ),
-                e.getEffectiveDate()
-        );
+                        e.getEffectiveDate()),
+                e.getEffectiveDate());
     }
 
     @Transactional(readOnly = true)
@@ -54,13 +54,9 @@ public class EmployeeService {
             String cur,
             Pageable p) {
 
-        return repo.search(
-                blank(s),
-                blank(c),
-                blank(d),
-                blank(cur),
-                p
-        ).map(this::out);
+        return repo.findAll(
+                EmployeeSpecifications.search(blank(s), blank(c), blank(d), blank(cur)),
+                p).map(this::out);
     }
 
     private String blank(String s) {
@@ -71,9 +67,7 @@ public class EmployeeService {
     public EmployeeResponse get(Long id) {
         return out(
                 repo.findById(id).orElseThrow(
-                        () -> new NotFoundException("Employee not found")
-                )
-        );
+                        () -> new NotFoundException("Employee not found")));
     }
 
     @Transactional
@@ -97,8 +91,7 @@ public class EmployeeService {
     public EmployeeResponse update(Long id, EmployeeRequest r) {
 
         Employee e = repo.findById(id).orElseThrow(
-                () -> new NotFoundException("Employee not found")
-        );
+                () -> new NotFoundException("Employee not found"));
 
         if (!Objects.equals(e.getVersion(), r.version())) {
             throw new ConflictException("Stale employee version");
@@ -117,8 +110,7 @@ public class EmployeeService {
     public void delete(Long id, Long version) {
 
         Employee e = repo.findById(id).orElseThrow(
-                () -> new NotFoundException("Employee not found")
-        );
+                () -> new NotFoundException("Employee not found"));
 
         if (!Objects.equals(e.getVersion(), version)) {
             throw new ConflictException("Stale employee version");

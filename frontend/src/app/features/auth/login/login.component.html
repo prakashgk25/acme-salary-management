@@ -7,7 +7,11 @@
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <label class="field">
         <span>Username</span>
-        <input formControlName="username" placeholder="Enter username" autocomplete="username" />
+        <input
+          formControlName="username"
+          placeholder="Enter username"
+          autocomplete="username"
+        />
         @if (form.controls.username.touched && form.controls.username.invalid) {
           <small class="field-error">Username is required.</small>
         }
@@ -15,7 +19,12 @@
 
       <label class="field">
         <span>Password</span>
-        <input type="password" formControlName="password" placeholder="Enter password" autocomplete="current-password" />
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Enter password"
+          autocomplete="current-password"
+        />
         @if (form.controls.password.touched && form.controls.password.invalid) {
           <small class="field-error">Password is required.</small>
         }
@@ -25,8 +34,12 @@
         <div class="form-banner form-banner-error">{{ error() }}</div>
       }
 
-      <button type="submit" class="btn btn-primary btn-block" [disabled]="loading()">
-        {{ loading() ? 'Signing in…' : 'Sign in' }}
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="loading()"
+      >
+        {{ loading() ? "Signing in…" : "Sign in" }}
       </button>
     </form>
   </section>

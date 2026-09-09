@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
-import { ToastService } from '../../services/toast.service';
+import { Component, inject } from "@angular/core";
+import { ToastService } from "../../services/toast.service";
 
 @Component({
-  selector: 'app-toast-stack',
+  selector: "app-toast-stack",
   standalone: true,
   template: `
     <div class="toast-stack" role="status" aria-live="polite">
@@ -10,11 +10,18 @@ import { ToastService } from '../../services/toast.service';
         <div class="toast" [class]="toast.kind">
           <span class="toast-dot"></span>
           <p>{{ toast.message }}</p>
-          <button type="button" class="toast-close" (click)="toastService.dismiss(toast.id)" aria-label="Dismiss">×</button>
+          <button
+            type="button"
+            class="toast-close"
+            (click)="toastService.dismiss(toast.id)"
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
         </div>
       }
     </div>
-  `
+  `,
 })
 export class ToastStackComponent {
   toastService = inject(ToastService);

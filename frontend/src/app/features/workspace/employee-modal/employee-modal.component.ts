@@ -1,23 +1,36 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EmployeeService } from '../../../core/services/employee.service';
-import { Employee, EmployeeRequest } from '../../../models/employee.model';
-import { COUNTRY_OPTIONS, CURRENCIES, DEPARTMENTS, currencyForCountry } from '../../../core/data/reference-data';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  inject,
+  signal,
+} from "@angular/core";
+import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { EmployeeService } from "../../../core/services/employee.service";
+import { Employee, EmployeeRequest } from "../../../models/employee.model";
+import {
+  COUNTRY_OPTIONS,
+  CURRENCIES,
+  DEPARTMENTS,
+  currencyForCountry,
+} from "../../../core/data/reference-data";
+import { ConfirmDialogComponent } from "../../../shared/components/confirm-dialog/confirm-dialog.component";
 
-export type EmployeeModalMode = 'create' | 'edit';
+export type EmployeeModalMode = "create" | "edit";
 
 @Component({
-  selector: 'app-employee-modal',
+  selector: "app-employee-modal",
   standalone: true,
   imports: [ReactiveFormsModule, ConfirmDialogComponent],
-  templateUrl: './employee-modal.component.html'
+  templateUrl: "./employee-modal.component.html",
 })
 export class EmployeeModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private api = inject(EmployeeService);
 
-  @Input() mode: EmployeeModalMode = 'create';
+  @Input() mode: EmployeeModalMode = "create";
   @Input() employee: Employee | null = null;
 
   @Output() saved = new EventEmitter<Employee>();
@@ -29,23 +42,23 @@ export class EmployeeModalComponent implements OnInit {
   readonly currencies = CURRENCIES;
 
   saving = signal(false);
-  error = signal('');
+  error = signal("");
   confirmingDelete = signal(false);
   deleting = signal(false);
 
   form = this.fb.nonNullable.group({
-    employeeNumber: ['', [Validators.required]],
-    firstName: ['', [Validators.required]],
-    lastName: ['', [Validators.required]],
-    department: ['Engineering', [Validators.required]],
-    country: ['India', [Validators.required]],
-    currency: ['INR', [Validators.required]],
+    employeeNumber: ["", [Validators.required]],
+    firstName: ["", [Validators.required]],
+    lastName: ["", [Validators.required]],
+    department: ["Engineering", [Validators.required]],
+    country: ["India", [Validators.required]],
+    currency: ["INR", [Validators.required]],
     annualSalary: [0, [Validators.required, Validators.min(0)]],
-    effectiveDate: ['', [Validators.required]]
+    effectiveDate: ["", [Validators.required]],
   });
 
   ngOnInit(): void {
-    if (this.mode === 'edit' && this.employee) {
+    if (this.mode === "edit" && this.employee) {
       const employee = this.employee;
       this.form.patchValue({
         employeeNumber: employee.employeeNumber,
@@ -55,7 +68,7 @@ export class EmployeeModalComponent implements OnInit {
         country: employee.country,
         currency: employee.currency,
         annualSalary: employee.annualSalary,
-        effectiveDate: employee.effectiveDate
+        effectiveDate: employee.effectiveDate,
       });
     } else {
       this.form.patchValue({ effectiveDate: this.today() });
@@ -76,7 +89,7 @@ export class EmployeeModalComponent implements OnInit {
       return;
     }
     this.saving.set(true);
-    this.error.set('');
+    this.error.set("");
     const value = this.form.getRawValue();
     const body: EmployeeRequest = {
       employeeNumber: value.employeeNumber,
@@ -86,25 +99,25 @@ export class EmployeeModalComponent implements OnInit {
       country: value.country,
       currency: value.currency,
       annualSalary: value.annualSalary,
-      effectiveDate: value.effectiveDate
+      effectiveDate: value.effectiveDate,
     };
 
-    if (this.mode === 'edit' && this.employee) {
+    if (this.mode === "edit" && this.employee) {
       body.version = this.employee.version;
       this.api.update(this.employee.id, body).subscribe({
-        next: updated => {
+        next: (updated) => {
           this.saving.set(false);
           this.saved.emit(updated);
         },
-        error: err => this.handleSaveError(err)
+        error: (err) => this.handleSaveError(err),
       });
     } else {
       this.api.create(body).subscribe({
-        next: created => {
+        next: (created) => {
           this.saving.set(false);
           this.saved.emit(created);
         },
-        error: err => this.handleSaveError(err)
+        error: (err) => this.handleSaveError(err),
       });
     }
   }
@@ -129,8 +142,8 @@ export class EmployeeModalComponent implements OnInit {
       error: () => {
         this.deleting.set(false);
         this.confirmingDelete.set(false);
-        this.error.set('Could not delete this employee. Please try again.');
-      }
+        this.error.set("Could not delete this employee. Please try again.");
+      },
     });
   }
 
@@ -138,8 +151,8 @@ export class EmployeeModalComponent implements OnInit {
     this.saving.set(false);
     this.error.set(
       err?.status === 409
-        ? 'This record was changed by someone else. Close and reopen it to see the latest version.'
-        : 'Could not save this employee. Check the entered data and try again.'
+        ? "This record was changed by someone else. Close and reopen it to see the latest version."
+        : "Could not save this employee. Check the entered data and try again.",
     );
   }
 
