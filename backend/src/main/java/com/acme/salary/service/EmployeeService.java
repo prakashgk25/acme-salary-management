@@ -1,4 +1,5 @@
 package com.acme.salary.service;
+
 import com.acme.salary.repository.EmployeeSpecifications;
 import com.acme.salary.dto.*;
 import com.acme.salary.entity.Employee;
@@ -90,6 +91,9 @@ public class EmployeeService {
     @Transactional
     public EmployeeResponse update(Long id, EmployeeRequest r) {
 
+        if (r.version() == null) {
+            throw new ConflictException("Version is required for update");
+        }
         Employee e = repo.findById(id).orElseThrow(
                 () -> new NotFoundException("Employee not found"));
 
