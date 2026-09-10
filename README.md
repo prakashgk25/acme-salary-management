@@ -1,95 +1,214 @@
-# ACME Employee Salary Management
+ACME Employee Salary Management
 
-End-to-end salary management for 10,000 employees using Java 21, Spring Boot, Spring Data JPA, PostgreSQL/H2, and Angular.
+A full-stack employee salary management application designed to help HR teams manage salary information for 10,000+ employees across multiple countries and currencies.
 
-## Requirements document
+The application replaces spreadsheet-based salary administration with a searchable, scalable web application that provides salary management, multi-currency normalization, and analytics.
 
-**Goal:** Replace Excel-based salary administration with a secure, searchable web application that lets an HR Manager maintain employee salary records and answer questions about organizational pay across countries and currencies.
+🚀 Live Application
+Frontend / UI
 
-**In scope**
-- Employee salary CRUD with employee, country, department, currency, annual salary and effective date.
-- Multi-currency normalization into a configurable base currency using a seeded FX-rate table.
-- Server-side pagination, sorting, filtering and free-text search for 10,000+ records.
-- Analytics: headcount, average/base-currency salary, total/base-currency payroll, and department/country summaries.
-- Optimistic concurrency using JPA `@Version` so stale edits are rejected rather than silently overwriting newer changes.
-- Deterministic seed data: 10,000 employees plus FX rates.
-- Validation, consistent REST errors, unit tests, and a responsive Angular UI.
+https://acme-salary-management-ui.onrender.com/login
 
-**Deliberately out of scope**
-- Payroll processing, tax calculation, payslips and statutory compliance: these are separate domains with country-specific complexity.
-- Authentication/SSO/RBAC implementation: the MVP assumes an authenticated HR Manager boundary; production deployment should integrate the organization's IdP.
-- Historical salary versioning/audit trail: useful but intentionally deferred to keep the first release focused on current salary administration; the data model can be extended later.
-- Employee self-service and compensation approvals: not required for the stated HR-manager workflow.
-- Live FX provider integration: seeded rates make tests and demos deterministic; a provider can be added behind an FX service later.
+Backend API
 
-**Success criteria:** HR can locate and edit a salary in seconds, reliably report payroll in one base currency, and analyze 10,000 records without loading the whole dataset into the browser.
+https://acme-salary-management-vltn.onrender.com
 
-## Run
+Database
 
-### Backend
-Requires Java 21 and Maven 3.9+.
+PostgreSQL hosted on Neon
 
-```bash
+Note about the backend:
+The Spring Boot backend is hosted on Render and may be automatically shut down after a period of inactivity.
+
+If the application is not immediately available, open the backend URL first:
+
+https://acme-salary-management-vltn.onrender.com
+
+Wait approximately 1–2 minutes for the backend service to start, then open the frontend login page.
+
+🔐 Demo Login
+
+Use the following credentials to access the application:
+
+User ID:  HRadmin
+Password: HRadmin
+
+After login, the HR Manager can access the employee management workspace and analytics.
+
+✨ Key Features
+Employee Management
+Add new employees
+Edit existing employee salary information
+View employee details
+Delete employee records
+Manage employee country, department, currency and salary
+Effective date support
+Search & Filtering
+Server-side pagination
+Free-text employee search
+Filter by country
+Filter by department
+Filter by currency
+Server-side sorting
+
+The application is designed to handle 10,000+ employee records without loading the complete dataset into the browser.
+
+💰 Multi-Currency Salary Management
+
+Employees can have salaries in different currencies:
+
+USD
+EUR
+GBP
+INR
+SGD
+AUD
+
+Salary values are normalized to a configurable base currency (USD by default) using seeded FX rates.
+
+📊 Analytics
+
+The application provides:
+
+Total headcount
+Average salary
+Total payroll
+Base-currency salary calculations
+Department-wise salary summaries
+Country-wise salary summaries
+🔒 Concurrent Updates
+
+Employee salary records use optimistic locking with JPA @Version.
+
+This prevents one HR user from accidentally overwriting changes made by another user using an outdated record.
+
+🛠️ Technology Stack
+Component	Technology
+Frontend	Angular
+Backend	Java 21
+Framework	Spring Boot
+Data Access	Spring Data JPA / Hibernate
+Production Database	PostgreSQL
+Database Hosting	Neon
+Local Database	H2
+Deployment	Render
+Seed Data	10,000 Employees + FX Rates
+🏗️ Application Architecture
+Angular UI
+    │
+    │ REST API
+    ▼
+Spring Boot Backend
+    │
+    ├── Employee Management
+    ├── Authentication
+    ├── Analytics
+    ├── Validation
+    └── FX Rate / Salary Normalization
+    │
+    ▼
+PostgreSQL (Neon)
+💻 Run Locally
+1. Start the Backend
+
+Requirements:
+
+Java 21
+Maven 3.9+
 cd backend
 mvn spring-boot:run
-```
 
-PostgreSQL (Neon) is used as the production database and seeds 10,000 employees + FX rates. API: `https://acme-salary-management-vltn.onrender.com/api`.
+Backend:
 
-For PostgreSQL, set `SPRING_PROFILES_ACTIVE=postgres` and the datasource environment variables in `application-postgres.yml`.
+http://localhost:8080
+2. Start the Angular Frontend
 
-### Frontend
-Requires Node.js 20+.
+Requirements:
 
-```bash
+Node.js 20+
 cd frontend
 npm install
 npm start
-```
 
-Open `http://localhost:4200`.
+Frontend:
 
-### Tests
-```bash
+http://localhost:4200
+3. Run Tests
 cd backend
 mvn test
-```
+🔗 API Endpoints
+Authentication
+POST /api/auth/login
+Employees
+GET    /api/employees
+GET    /api/employees/{id}
+POST   /api/employees
+PUT    /api/employees/{id}
+DELETE /api/employees/{id}
 
-## API
-- `GET /api/employees?page=0&size=25&search=alice&country=India&department=Engineering&currency=INR&sort=lastName,asc`
-- `GET /api/employees/{id}`
-- `POST /api/employees`
-- `PUT /api/employees/{id}` with `version` from the latest GET
-- `DELETE /api/employees/{id}` with `If-Match-Version` header
-- `GET /api/analytics/summary`
-- `GET /api/analytics/by-department`
-- `GET /api/analytics/by-country`
-- `GET /api/fx-rates`
+Example:
 
-The backend normalizes salary to the base currency (`USD` by default) using the effective FX rate for the employee's currency.
+GET /api/employees?page=0&size=25&search=alice&country=India&department=Engineering&currency=INR&sort=lastName,asc
+Analytics
+GET /api/analytics/summary
+GET /api/analytics/by-department
+GET /api/analytics/by-country
+🌱 Seed Data
 
-## HR Login
+The application includes deterministic seed data for:
 
-The UI now starts with an HR login screen.
+10,000 employees
+Multiple countries
+Multiple departments
+Multiple currencies
+FX conversion rates
 
-Demo credentials:
-- User ID: `HRadmin`
-- Password: `HRadmin`
+This makes the application suitable for demonstrating pagination, filtering, searching and analytics against a realistic dataset.
 
-The frontend keeps the authenticated state in browser `sessionStorage` until Logout or the browser session ends. The backend exposes `POST /api/auth/login` for credential validation.
+📹 Application Demo
 
-> Note: This is assignment/demo authentication. The credentials are intentionally configured in the backend source and the employee APIs are not protected by Spring Security/JWT. For production, replace this with Spring Security, password hashing, sessions or JWT, and role-based authorization.
+The attached video demonstrates the main features of the application, including:
 
-## Employee Form Selections
+HR Login
+Employee dashboard
+Employee search and filtering
+Add employee
+Edit employee
+Delete employee
+Salary and currency management
+Analytics
+Local application
+Deployed application on Render
+🔒 Production Considerations
 
-Department, country, and currency are dropdowns in the Add/Edit employee form.
+The current authentication implementation is intended for assignment/demo purposes.
 
-Available departments:
-Engineering, Developement, Finance, HR, Sales, Operations, Product
+For a production environment, authentication should be replaced with:
 
-Available countries:
-India, USA, UK, Germany, Singapore, Australia
+Spring Security
+Secure password hashing
+JWT or server-side sessions
+Role-based access control
+Organization SSO / Identity Provider integration
 
-Available currencies:
-USD, EUR, GBP, INR, SGD, AUD
+Historical salary tracking, audit trails, payroll processing, tax calculation and live FX provider integration are intentionally outside the scope of this MVP.
 
+📌 Deployment
+
+The application is deployed using:
+
+Angular UI
+     ↓
+Render
+     ↓
+Spring Boot REST API
+     ↓
+Render
+     ↓
+PostgreSQL
+     ↓
+Neon
+
+The frontend communicates with the deployed Spring Boot REST API, while employee and salary data is persisted in the Neon PostgreSQL database.
+
+First-load delay: Because the Render backend can sleep when inactive, the first request after inactivity may take approximately 1–2 minutes while the service starts. Subsequent requests should respond normally.
